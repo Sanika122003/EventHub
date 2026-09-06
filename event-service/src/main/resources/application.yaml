@@ -1,0 +1,59 @@
+spring:
+  application:
+    name: event-service
+
+  datasource:
+    url: jdbc:mysql://host.docker.internal:3306/eventhub_event
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: update
+
+    show-sql: true
+
+    properties:
+      hibernate:
+        format_sql: true
+
+  kafka:
+    bootstrap-servers: kafka:9092
+    consumer:
+      group-id: event-service-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
+server:
+  port: 8082
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+  endpoint:
+    health:
+      show-details: always
+
+  info:
+    env:
+      enabled: true
+
+info:
+  app:
+    name: EventHub Event Service
+    description: Event Management Microservice
+    version: 1.0.0
+    developer: Sanika Shinde
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka-server-container:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
