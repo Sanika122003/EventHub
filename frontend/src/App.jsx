@@ -9,6 +9,7 @@ import Footer from "./components/Footer";
 import EventDetails from "./pages/EventDetails";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import MyBookings from "./pages/MyBookings";
 
 
 function Home() {
@@ -32,6 +33,7 @@ function App() {
       <Routes>
 
         <Route path="/" element={<Home />} />
+        <Route path="/events" element={<Events />} />
 
         <Route
           path="/events/:id"
@@ -45,6 +47,9 @@ function App() {
        <Route
          path="/register"
          element={<Register />}
+       />
+       <Route path="/my-bookings"
+       element={<MyBookings />}
        />
       </Routes>
 

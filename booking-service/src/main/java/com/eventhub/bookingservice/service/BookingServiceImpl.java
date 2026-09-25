@@ -97,7 +97,7 @@ public class BookingServiceImpl implements BookingService {
 
         booking.setTotalAmount(totalAmount);
 
-        booking.setBookingStatus(BookingStatus.PENDING);
+        booking.setBookingStatus(BookingStatus.CONFIRMED);
 
         // 5. Save booking
         bookingRepository.save(booking);

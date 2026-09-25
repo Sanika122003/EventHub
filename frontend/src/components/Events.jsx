@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 
 import comedyImage from "../assets/events/comedy.jpg";
 import technologyImage from "../assets/events/technology.jpg";
@@ -8,9 +8,15 @@ import sportImage from "../assets/events/sport.jpg";
 
 
 function Events() {
+const [searchParams] = useSearchParams();
+const selectedCategory = searchParams.get("category");
 
   const [events, setEvents] = useState([]);
   const [showAll, setShowAll] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState(
+    selectedCategory || ""
+  );
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -217,9 +223,25 @@ function Events() {
 
   // First 3 events initially, all when View All is clicked
 
+  const filteredEvents = events.filter((event) => {
+    const matchesCategory = categoryFilter
+      ? event.category?.toString().toUpperCase() ===
+        categoryFilter.toUpperCase()
+      : true;
+
+    const searchText = searchTerm.toLowerCase();
+
+    const matchesSearch =
+      event.title?.toLowerCase().includes(searchText) ||
+      event.description?.toLowerCase().includes(searchText) ||
+      event.location?.toLowerCase().includes(searchText);
+
+    return matchesCategory && matchesSearch;
+  });
+
   const visibleEvents = showAll
-    ? events
-    : events.slice(0, 3);
+    ? filteredEvents
+    : filteredEvents.slice(0, 3);
 
 
   return (
@@ -235,6 +257,47 @@ function Events() {
             Discover events people are loving right now.
           </p>
 
+        </div>
+
+        <div className="event-search">
+          <input
+            type="text"
+            placeholder="Search events..."
+            value={searchTerm}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setShowAll(false);
+            }}
+          />
+
+          <select
+            value={categoryFilter}
+            onChange={(e) => {
+              setCategoryFilter(e.target.value);
+              setShowAll(false);
+            }}
+          >
+            <option value="">All Categories</option>
+            <option value="MUSIC">Music</option>
+            <option value="SPORTS">Sports</option>
+            <option value="TECH">Tech</option>
+            <option value="EDUCATION">Education</option>
+            <option value="BUSINESS">Business</option>
+            <option value="WORKSHOP">Workshop</option>
+            <option value="CULTURAL">Cultural</option>
+            <option value="OTHER">Other</option>
+          </select>
+
+          <button
+            className="clear-filter-btn"
+            onClick={() => {
+              setSearchTerm("");
+              setCategoryFilter("");
+              setShowAll(false);
+            }}
+          >
+            Clear Filters
+          </button>
         </div>
 
 

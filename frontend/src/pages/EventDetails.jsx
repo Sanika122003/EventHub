@@ -15,6 +15,88 @@ function EventDetails() {
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [numberOfTickets, setNumberOfTickets] = useState(1);
+  const [bookingMessage, setBookingMessage] = useState("");
+  const [bookingError, setBookingError] = useState("");
+  const [bookingLoading, setBookingLoading] = useState(false);
+
+  const handleBooking = async () => {
+
+    const token = localStorage.getItem("token");
+    const profileResponse = await fetch(
+      "http://localhost:8080/api/users/profile",
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+    if (!profileResponse.ok) {
+      throw new Error("Unable to get user profile.");
+    }
+
+    const profile = await profileResponse.json();
+
+    if (!token) {
+      setBookingError("Please login to book an event.");
+      return;
+    }
+
+    setBookingMessage("");
+    setBookingError("");
+    setBookingLoading(true);
+
+    try {
+
+      const response = await fetch(
+        "http://localhost:8080/api/bookings",
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+
+          body: JSON.stringify({
+            userId: profile.id,
+            eventId: event.id,
+            numberOfTickets: numberOfTickets
+          })
+        }
+      );
+
+      const data = await response.text();
+
+      if (response.ok) {
+
+        setBookingMessage(data);
+        setNumberOfTickets(1);
+
+      } else {
+
+        setBookingError(
+          data || "Booking failed. Please try again."
+        );
+
+      }
+
+    } catch (error) {
+
+      console.error("Booking error:", error);
+
+      setBookingError(
+        "Unable to connect to the server."
+      );
+
+    } finally {
+
+      setBookingLoading(false);
+
+    }
+
+  };
 
 
   useEffect(() => {
@@ -61,6 +143,69 @@ function EventDetails() {
     if (!event) {
       return null;
     }
+    const handleBooking = async () => {
+
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        setBookingError("Please login to book an event.");
+        return;
+      }
+
+      setBookingMessage("");
+      setBookingError("");
+      setBookingLoading(true);
+
+      try {
+
+        const response = await fetch(
+          "http://localhost:8080/api/bookings",
+          {
+            method: "POST",
+
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${token}`
+            },
+
+            body: JSON.stringify({
+              userId: 1,
+              eventId: event.id,
+              numberOfTickets: numberOfTickets
+            })
+          }
+        );
+
+        const data = await response.text();
+
+        if (response.ok) {
+
+          setBookingMessage(data);
+
+          setNumberOfTickets(1);
+
+        } else {
+
+          setBookingError(
+            data || "Booking failed. Please try again."
+          );
+
+        }
+
+      } catch (error) {
+
+        console.error("Booking error:", error);
+
+        setBookingError(
+          "Unable to connect to the server."
+        );
+
+      } finally {
+
+        setBookingLoading(false);
+
+      }
+    };
 
     const category = event.category?.toString().toLowerCase();
 
@@ -322,9 +467,19 @@ function EventDetails() {
 
 
           {/* Bottom */}
+          {bookingMessage && (
+            <p className="success-message">
+              {bookingMessage}
+            </p>
+          )}
+
+          {bookingError && (
+            <p className="error-message">
+              {bookingError}
+            </p>
+          )}
 
           <div className="event-details-bottom">
-
 
             <div className="event-details-price-container">
 
@@ -339,8 +494,57 @@ function EventDetails() {
             </div>
 
 
-            <button className="book-event-btn">
-              Book Now
+            <div className="ticket-selector">
+
+              <button
+                type="button"
+                onClick={() =>
+                  setNumberOfTickets(
+                    Math.max(1, numberOfTickets - 1)
+                  )
+                }
+              >
+                −
+              </button>
+
+              <span>
+                {numberOfTickets}
+              </span>
+
+              <button
+                type="button"
+                onClick={() =>
+                  setNumberOfTickets(
+                    Math.min(
+                      event.availableSeats,
+                      numberOfTickets + 1
+                    )
+                  )
+                }
+              >
+                +
+              </button>
+
+            </div>
+
+
+            <div className="booking-total">
+
+              <span>Total</span>
+
+              <strong>
+                ₹{event.price * numberOfTickets}
+              </strong>
+
+            </div>
+
+
+            <button
+              className="book-event-btn"
+              onClick={handleBooking}
+              disabled={bookingLoading}
+            >
+              {bookingLoading ? "Booking..." : "Book Now"}
             </button>
 
 

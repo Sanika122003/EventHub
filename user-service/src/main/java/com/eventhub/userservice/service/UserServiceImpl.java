@@ -80,6 +80,7 @@ public class UserServiceImpl implements UserService {
                         new RuntimeException("User not found."));
 
         return new UserProfileResponse(
+                user.getId(),
                 user.getFullName(),
                 user.getEmail(),
                 user.getRole().name()
