@@ -1,16 +1,14 @@
 import { useEffect, useState } from "react";
 
 function MyBookings() {
-
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const handleCancel = async (bookingId) => {
 
+  const handleCancel = async (bookingId) => {
     const token = localStorage.getItem("token");
 
     try {
-
       const response = await fetch(
         `http://localhost:8080/api/bookings/${bookingId}/cancel`,
         {
@@ -28,16 +26,12 @@ function MyBookings() {
       alert("Booking cancelled successfully.");
 
       fetchBookings();
-
     } catch (error) {
-
       alert("Unable to cancel booking.");
-
     }
   };
 
   const fetchBookings = async () => {
-
     const token = localStorage.getItem("token");
 
     if (!token) {
@@ -47,7 +41,6 @@ function MyBookings() {
     }
 
     try {
-
       // Get logged-in user's ID
       const profileResponse = await fetch(
         "http://localhost:8080/api/users/profile",
@@ -81,16 +74,11 @@ function MyBookings() {
       const data = await bookingResponse.json();
 
       setBookings(data);
-
     } catch (error) {
-
       console.error("Booking error:", error);
       setError("Unable to load your bookings.");
-
     } finally {
-
       setLoading(false);
-
     }
   };
 
@@ -109,8 +97,8 @@ function MyBookings() {
 
   return (
     <section className="my-bookings-page">
-
       <h1>My Bookings</h1>
+
       <p className="my-bookings-subtitle">
         View and manage your event bookings.
       </p>
@@ -131,7 +119,11 @@ function MyBookings() {
 
           <div className="booking-card" key={booking.id}>
 
-            <h2>Booking #{booking.id}</h2>
+            <h2>{booking.eventTitle}</h2>
+
+            <p>
+              <strong>Booking #:</strong> {booking.id}
+            </p>
 
             <p>
               <strong>Event ID:</strong> {booking.eventId}
@@ -139,6 +131,10 @@ function MyBookings() {
 
             <p>
               <strong>Tickets:</strong> {booking.numberOfTickets}
+            </p>
+
+            <p>
+              <strong>Total Amount:</strong> ₹{booking.totalAmount}
             </p>
 
             <p>

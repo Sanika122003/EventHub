@@ -140,6 +140,12 @@ public class BookingServiceImpl implements BookingService {
         response.setBookingReference(booking.getBookingReference());
         response.setUserId(booking.getUserId());
         response.setEventId(booking.getEventId());
+
+        EventResponse event =
+                eventServiceClient.getEventById(booking.getEventId());
+
+        response.setEventTitle(event.getTitle());
+
         response.setNumberOfTickets(booking.getNumberOfTickets());
         response.setTotalAmount(booking.getTotalAmount());
         response.setBookingStatus(booking.getBookingStatus());

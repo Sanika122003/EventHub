@@ -14,6 +14,8 @@ public class BookingResponse {
 
     private Long eventId;
 
+    private String eventTitle;
+
     private Integer numberOfTickets;
 
     private Double totalAmount;
@@ -52,6 +54,14 @@ public class BookingResponse {
 
     public void setEventId(Long eventId) {
         this.eventId = eventId;
+    }
+
+    public String getEventTitle() {
+        return eventTitle;
+    }
+
+    public void setEventTitle(String eventTitle) {
+        this.eventTitle = eventTitle;
     }
 
     public Integer getNumberOfTickets() {
